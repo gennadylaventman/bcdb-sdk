@@ -44,7 +44,7 @@ func executeForArgs(args []string, lg *logger.SugarLogger) (output string, exit 
 	//
 	app := kingpin.New("cars", "Car registry demo")
 	demoDir := app.Flag("demo-dir",
-		fmt.Sprintf("Path to the folder that will contain all the material for the demo. If missing, taken from envar: %s", demoDirEnvar)).
+		fmt.Sprintf("path to the folder that will contain all the material for the demo. If missing, taken from envar: %s", demoDirEnvar)).
 		Short('d').
 		Envar(demoDirEnvar).
 		Required().

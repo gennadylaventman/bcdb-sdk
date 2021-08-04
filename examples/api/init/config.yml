@@ -1,0 +1,19 @@
+connectionConfig:
+  replicaSet:
+    - id: "server1"
+      endpoint: "http://127.0.0.1:6001"
+  rootCAs: "../crypto/CA/CA.pem"
+  logLevel: "debug"
+
+sessionConfig:
+  userConfig:
+    userID: "admin"
+    certPath: "../crypto/admin/admin.pem"
+    privateKeyPath: "../crypto/admin/admin.key"
+  txTimeout: 20s
+  queryTimeout: 10s
+
+workloadConfig:
+  numOfClients: 2
+  loadPerClient: 1000
+  runtime: 1000s

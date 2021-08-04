@@ -1,0 +1,98 @@
+2021-07-30T09:24:23.282+0300	INFO	bcdb-client	provenance/queries.go:108	GetLedgerPath between blocks 1 and 6
+2021-07-30T09:24:23.282+0300	DEBUG	bcdb-client	bcdb/tx_context.go:166	Query URL:http://127.0.0.1:6001/ledger/path?start=1&end=6
+
+2021-07-30T09:24:23.282+0300	DEBUG	bcdb-client	bcdb/tx_context.go:167	Query:{
+  "user_id": "alice",
+  "start_block_number": 1,
+  "end_block_number": 6
+} 
+
+2021-07-30T09:24:23.282+0300	DEBUG	bcdb-client	bcdb/tx_context.go:168	Raw Query:{"user_id":"alice","start_block_number":1,"end_block_number":6}
+
+2021-07-30T09:24:23.283+0300	DEBUG	bcdb-client	bcdb/tx_context.go:171	Signature: MEYCIQDtHxHL2qsFz3KYtcRMfoSqt/NRvhlYSkVMy2AbVLMmtAIhAOiNT91Sjx1izg8ewWYRz4TwGbI3LDs3VhM9wlJvm0sJ
+
+http://127.0.0.1:6001/ledger/path?start=1&end=6
+map[Accept:[application/json] Signature:[MEYCIQC6C8c4NBgnfAEC0L5ftPOQqxbP53rypSHKL+oZ7O5cggIhAPyz1Jg8Dlv98XVDM6GaN9D17X0XiVvA7D2l8cibXcYr] Userid:[alice]]
+2021-07-30T09:24:23.285+0300	DEBUG	bcdb-client	bcdb/tx_context.go:200	Response:
+ {
+  "response": {
+    "header": {
+      "node_id": "bdb-node-1"
+    },
+    "block_headers": [
+      {
+        "base_header": {
+          "number": 6,
+          "previous_base_header_hash": "TJYT7zr95D3ghtU/M+j8OStU6r8Y+XRC5xfb90jshbI=",
+          "last_committed_block_hash": "r57EtiB2XO1XlVAxBwFtn7cHP7YsfUBFi69y0UY0tw0=",
+          "last_committed_block_num": 5
+        },
+        "skipchain_hashes": [
+          "r57EtiB2XO1XlVAxBwFtn7cHP7YsfUBFi69y0UY0tw0="
+        ],
+        "tx_merkel_tree_root_hash": "dSc42JVp36bfORFO8QehzQFypEtBQfUzluT6ixhjeo4=",
+        "state_merkel_tree_root_hash": "YRsFw5PcG1XzYO5o5nJa3lVfknijRqu6cCaDF1zpPA8=",
+        "validation_info": [
+          {}
+        ]
+      },
+      {
+        "base_header": {
+          "number": 5,
+          "previous_base_header_hash": "NqyVWNBl/XmWLM7PkK8NbI0qrwFmYvGHSTc03vj/zus=",
+          "last_committed_block_hash": "nDNWHZPrlG3JVq6eLcuHPaS1iEZkBkemV7IleIVx6Jc=",
+          "last_committed_block_num": 4
+        },
+        "skipchain_hashes": [
+          "nDNWHZPrlG3JVq6eLcuHPaS1iEZkBkemV7IleIVx6Jc=",
+          "wZmtCr8rJp/NGsEDjySSfHhi7Omr2Yw/d8rUaetrzLE=",
+          "tl3PgPL/E52yhCWG1vLGk/bJXRqhw3rDxSXZzvMcuWo="
+        ],
+        "tx_merkel_tree_root_hash": "UXXqKu/I2Vr0Ma5cV9Hfun4Xo5285ZwdV9jcKspTnJo=",
+        "state_merkel_tree_root_hash": "ksPp+NOrYLi909AYgrmrmGN1DKuez8ItpRJeLFpWy9g=",
+        "validation_info": [
+          {}
+        ]
+      },
+      {
+        "base_header": {
+          "number": 1
+        },
+        "tx_merkel_tree_root_hash": "1XYyyOxBKRKw/vHgGGClrbko+wjkHmgzkWIjWEqoGaU=",
+        "state_merkel_tree_root_hash": "Gxq3k91oLlxknN9VJCBEnc9IFnJU7YKGbiKtbQLMDF0=",
+        "validation_info": [
+          {}
+        ]
+      }
+    ]
+  },
+  "signature": "MEUCICW9T8DhrAkxmE0WYaiu87ZjRK5RlKlPwkXP9iue9MrrAiEA6dUGHvhIifabPyUmfSDWX5HpmDfmiNJMOTrksEcGTxY="
+} 
+
+2021-07-30T09:24:23.285+0300	INFO	bcdb-client	provenance/queries.go:111	GetTransactionProof for tx at index 0 in block 5
+2021-07-30T09:24:23.285+0300	DEBUG	bcdb-client	bcdb/tx_context.go:166	Query URL:http://127.0.0.1:6001/ledger/proof/tx/5?idx=0
+
+2021-07-30T09:24:23.285+0300	DEBUG	bcdb-client	bcdb/tx_context.go:167	Query:{
+  "user_id": "alice",
+  "block_number": 5
+} 
+
+2021-07-30T09:24:23.285+0300	DEBUG	bcdb-client	bcdb/tx_context.go:168	Raw Query:{"user_id":"alice","block_number":5}
+
+2021-07-30T09:24:23.285+0300	DEBUG	bcdb-client	bcdb/tx_context.go:171	Signature: MEUCIDULKM2qMp46CrNM+pZKptyiT3n4tPQ7Nb2R2+twHTmcAiEAkIf0kR9OMreWiizxgQS2NvDKI6a+WYNP2I5qls0yoF0=
+
+http://127.0.0.1:6001/ledger/proof/tx/5?idx=0
+map[Accept:[application/json] Signature:[MEQCID3KRS2YWmMnniuXkjgjV06s40zUTgiY7fTqufZ4N/OKAiBh6Q3qMWWx6PKcw9L0uLpal8ZmNp/rjX/iQfZiDnsn1g==] Userid:[alice]]
+2021-07-30T09:24:23.287+0300	DEBUG	bcdb-client	bcdb/tx_context.go:200	Response:
+ {
+  "response": {
+    "header": {
+      "node_id": "bdb-node-1"
+    },
+    "hashes": [
+      "UXXqKu/I2Vr0Ma5cV9Hfun4Xo5285ZwdV9jcKspTnJo="
+    ]
+  },
+  "signature": "MEQCIGrrrNT7H1DpT0kFcCYOuTKCRhOCcBgVn8uthYCYZAFyAiBUWeM7zZggbp/JG0GykP9Ifl1w+WmyJKyMq2GDB0p1/g=="
+} 
+

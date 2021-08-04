@@ -4,7 +4,10 @@ package bcdb
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
+	"github.com/IBM-Blockchain/bcdb-server/pkg/cryptoservice"
+	"go.uber.org/zap/zapcore"
 	"net/http"
 	"net/url"
 	"time"
@@ -68,6 +71,13 @@ func (t *commonTxContext) commit(tx txContext, postEndpoint string, sync bool) (
 		defer cancelFnc()
 	}
 	defer tx.cleanCtx()
+
+	if t.logger.SugaredLogger.Desugar().Core().Enabled(zapcore.DebugLevel) {
+		str, _ := json.MarshalIndent(t.txEnvelope, "", "  ")
+		strNoIntent, _ := json.Marshal(t.txEnvelope)
+		t.logger.Debugf("Envelope unintent :\n %s \n", string(strNoIntent))
+		t.logger.Debugf("Envelope :\n %s \n", string(str))
+	}
 
 	response, err := t.restClient.Submit(ctx, postEndpointResolved.String(), t.txEnvelope, serverTimeout)
 	if err != nil {
@@ -150,6 +160,17 @@ func (t *commonTxContext) handleRequest(rawurl string, query, res proto.Message)
 		defer cancelFnc()
 	}
 
+	if t.logger.SugaredLogger.Desugar().Core().Enabled(zapcore.DebugLevel) {
+		str, _ := json.MarshalIndent(query, "", "  ")
+		strNoIdent, _ := json.Marshal(query)
+		t.logger.Debugf("Query URL:%s\n", restURL)
+		t.logger.Debugf("Query:%s \n", string(str))
+		t.logger.Debugf("Raw Query:%s\n", string(strNoIdent))
+
+		signature, _ := cryptoservice.SignQuery(t.signer, query)
+		t.logger.Debugf("Signature: %s\n", base64.StdEncoding.EncodeToString(signature))
+	}
+
 	response, err := t.restClient.Query(ctx, restURL, query)
 	if err != nil {
 		return err
@@ -174,6 +195,10 @@ func (t *commonTxContext) handleRequest(rawurl string, query, res proto.Message)
 		return err
 	}
 
+	if t.logger.SugaredLogger.Desugar().Core().Enabled(zapcore.DebugLevel) {
+		str, _ := json.MarshalIndent(res, "", "  ")
+		t.logger.Debugf("Response:\n %s \n", string(str))
+	}
 	return nil
 }
 

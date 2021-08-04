@@ -51,3 +51,46 @@ func (p *TxProof) Verify(receipt *types.TxReceipt, tx proto.Message) (bool, erro
 
 	return bytes.Equal(receipt.GetHeader().GetTxMerkelTreeRootHash(), currHash), nil
 }
+
+func VerifyLedgerPath(path []*types.BlockHeader) (bool, error) {
+	if len(path) == 0 {
+		return false, errors.New("impossible to validate empty path in ledger")
+	}
+	if len(path) == 1 {
+		return false, errors.Errorf("ledger path composed from single block %d is impossible to validate", path[0].BaseHeader.Number)
+	}
+	currBlock := path[0]
+
+	for i := 1; i < len(path) - 1 ; i++ {
+		hashToLookFor, err := calculateHeaderHash(path[i])
+		if err != nil {
+			return false, err
+		}
+		hashFound := false
+		for _, h := range currBlock.SkipchainHashes {
+			if bytes.Equal(h, hashToLookFor) {
+				hashFound = true
+				break
+			}
+		}
+		if !hashFound {
+			return false, nil
+		}
+		currBlock = path[i]
+	}
+
+	return true, nil
+}
+
+func calculateHeaderHash(b *types.BlockHeader) ([]byte, error) {
+	blockHeaderBytes, err := proto.Marshal(b)
+	if err != nil {
+		return nil, errors.Wrapf(err, "can't marshal block header {%d, %v}", b.BaseHeader.Number, b)
+	}
+
+	blockHash, err := crypto.ComputeSHA256Hash(blockHeaderBytes)
+	if err != nil {
+		return nil, errors.Wrapf(err, "can't calculate block hash {%d, %v}", b.BaseHeader.Number, b)
+	}
+	return blockHash, nil
+}

@@ -7,14 +7,15 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/constants"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/cryptoservice"
+	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 )
 
 //go:generate mockery --dir . --name RestClient --case underscore --output mocks/
@@ -69,6 +70,8 @@ func (r *restClient) Query(ctx context.Context, endpoint string, msg proto.Messa
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set(constants.UserHeader, r.userID)
 	req.Header.Set(constants.SignatureHeader, base64.StdEncoding.EncodeToString(signature))
+	fmt.Println(endpoint)
+	fmt.Println(req.Header)
 	resp, err := r.httpClient.Do(req)
 
 	if _, ok := err.(net.Error); ok {
