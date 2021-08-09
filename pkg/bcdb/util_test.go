@@ -147,7 +147,7 @@ func openUserSessionWithQueryTimeout(t *testing.T, bcdb BCDB, user string, tempD
 			CertPath:       path.Join(tempDir, user+".pem"),
 			PrivateKeyPath: path.Join(tempDir, user+".key"),
 		},
-		TxTimeout:    time.Second * 2,
+		TxTimeout:    time.Second * 20,
 		QueryTimeout: queryTimeout,
 	})
 	require.NoError(t, err)

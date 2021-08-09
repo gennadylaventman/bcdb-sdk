@@ -6,10 +6,10 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/crypto"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/types"
+	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 )
 
 type TxProof struct {

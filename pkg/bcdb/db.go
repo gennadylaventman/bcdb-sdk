@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/url"
 
+	"github.com/IBM-Blockchain/bcdb-server/pkg/state"
+
 	"github.com/IBM-Blockchain/bcdb-sdk/pkg/config"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/certificateauthority"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/crypto"
@@ -60,6 +62,8 @@ type Ledger interface {
 	GetTransactionProof(blockNum uint64, txIndex int) (*TxProof, error)
 	// GetTransactionReceipt return block header where tx is stored and tx index inside block
 	GetTransactionReceipt(txId string) (*types.TxReceipt, error)
+	// GetDataProof returns path in Merkle-Patricia Trie from leaf (value) to trie root stored in BlockHeader
+	GetDataProof(blockNum uint64, dbName, key string, isDeleted bool) (*state.Proof, error)
 }
 
 type Provenance interface {
@@ -129,7 +133,7 @@ func Create(config *config.ConnectionConfig) (BCDB, error) {
 		return nil, err
 	}
 
-	// Validate replica set URIs
+	// Verify replica set URIs
 	urls := map[string]*url.URL{}
 	for _, uri := range config.ReplicaSet {
 		replicaURL, err := url.Parse(uri.Endpoint)

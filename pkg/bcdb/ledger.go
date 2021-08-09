@@ -4,6 +4,7 @@ package bcdb
 
 import (
 	"github.com/IBM-Blockchain/bcdb-server/pkg/constants"
+	"github.com/IBM-Blockchain/bcdb-server/pkg/state"
 	"github.com/IBM-Blockchain/bcdb-server/pkg/types"
 )
 
@@ -95,4 +96,27 @@ func (l *ledger) GetTransactionReceipt(txId string) (*types.TxReceipt, error) {
 	// TODO: signature verification
 
 	return resEnv.GetResponse().GetReceipt(), nil
+}
+
+func (l *ledger) GetDataProof(blockNum uint64, dbName, key string, isDeleted bool) (*state.Proof, error) {
+	path := constants.URLDataProof(blockNum, dbName, key, isDeleted)
+	resEnv := &types.GetDataProofResponseEnvelope{}
+	err := l.handleRequest(
+		path,
+		&types.GetDataProofQuery{
+			UserId:      l.userID,
+			BlockNumber: blockNum,
+			DbName:      dbName,
+			Key:         key,
+			IsDeleted:   isDeleted,
+		}, resEnv,
+	)
+	if err != nil {
+		l.logger.Errorf("failed to execute state proof query %s, due to %s", path, err)
+		return nil, err
+	}
+
+	// TODO: signature verification
+
+	return state.NewProof(resEnv.GetResponse().GetPath()), nil
 }
