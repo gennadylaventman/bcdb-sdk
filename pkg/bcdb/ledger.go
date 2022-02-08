@@ -97,7 +97,7 @@ func (l *ledger) GetLedgerPath(startBlock, endBlock uint64) (*LedgerPath, error)
 		return nil, err
 	}
 
-	return &LedgerPath{resEnv.GetResponse().GetBlockHeaders()}, nil
+	return &LedgerPath{Path: resEnv.GetResponse().GetBlockHeaders()}, nil
 }
 
 func (l *ledger) GetTransactionProof(blockNum uint64, txIndex int) (*TxProof, error) {
@@ -169,7 +169,7 @@ func (l *ledger) GetFullTxProofAndVerify(txReceipt *types.TxReceipt, lastKnownBl
 	txBlockHeader := txReceipt.GetHeader()
 	if txBlockHeader.GetBaseHeader().GetNumber() <= GenesisBlockNumber ||
 		txBlockHeader.GetBaseHeader().GetNumber() > lastKnownBlockHeader.GetBaseHeader().GetNumber() {
-		return nil, nil, &ProofVerificationError{fmt.Sprintf("something wrong with blocks order: genesis: %d, tx block header %d, last know block header: %d",
+		return nil, nil, &ProofVerificationError{msg: fmt.Sprintf("something wrong with blocks order: genesis: %d, tx block header %d, last know block header: %d",
 			GenesisBlockNumber, txBlockHeader.GetBaseHeader().GetNumber(), lastKnownBlockHeader.GetBaseHeader().GetNumber())}
 	}
 	genesisHeader, err := l.GetBlockHeader(GenesisBlockNumber)
@@ -182,17 +182,27 @@ func (l *ledger) GetFullTxProofAndVerify(txReceipt *types.TxReceipt, lastKnownBl
 		return nil, nil, err
 	}
 	if !proto.Equal(endBlockHeader, lastKnownBlockHeader) {
-		return nil, nil, &ProofVerificationError{fmt.Sprintf("can't create proof, last known block (%d) is not same as in ledger", lastKnownBlockHeader.GetBaseHeader().GetNumber())}
+		return nil, nil, &ProofVerificationError{msg: fmt.Sprintf("can't create proof, last known block (%d) is not same as in ledger", lastKnownBlockHeader.GetBaseHeader().GetNumber())}
 	}
 
-	pathPartOne, err := l.GetLedgerPath(GenesisBlockNumber, txBlockHeader.GetBaseHeader().GetNumber())
-	if err != nil {
-		return nil, nil, err
+	pathPartOne := &LedgerPath{
+		Path: []*types.BlockHeader{txBlockHeader},
+	}
+	if GenesisBlockNumber != txBlockHeader.GetBaseHeader().GetNumber() {
+		pathPartOne, err = l.GetLedgerPath(GenesisBlockNumber, txBlockHeader.GetBaseHeader().GetNumber())
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
-	pathPartTwo, err := l.GetLedgerPath(txBlockHeader.GetBaseHeader().GetNumber(), lastKnownBlockHeader.GetBaseHeader().GetNumber())
-	if err != nil {
-		return nil, nil, err
+	pathPartTwo := &LedgerPath{
+		Path: []*types.BlockHeader{txBlockHeader},
+	}
+	if txBlockHeader.GetBaseHeader().GetNumber() != lastKnownBlockHeader.GetBaseHeader().GetNumber() {
+		pathPartTwo, err = l.GetLedgerPath(txBlockHeader.GetBaseHeader().GetNumber(), lastKnownBlockHeader.GetBaseHeader().GetNumber())
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	txProof, err := l.GetTransactionProof(txBlockHeader.GetBaseHeader().GetNumber(), int(txReceipt.GetTxIndex()))
@@ -205,23 +215,23 @@ func (l *ledger) GetFullTxProofAndVerify(txReceipt *types.TxReceipt, lastKnownBl
 		return nil, nil, err
 	}
 	if !txValid {
-		return nil, nil, &ProofVerificationError{"verification failed: tx merkle tree path"}
+		return nil, nil, &ProofVerificationError{msg: "verification failed: tx merkle tree path"}
 	}
 	pathPartOneValid, err := pathPartOne.Verify(genesisHeader, txBlockHeader)
 	if err != nil {
 		return nil, nil, err
 	}
 	if !pathPartOneValid {
-		return nil, nil, &ProofVerificationError{"verification failed: ledger path to genesis block"}
+		return nil, nil, &ProofVerificationError{msg: "verification failed: ledger path to genesis block"}
 	}
 	pathPartTwoValid, err := pathPartTwo.Verify(txBlockHeader, lastKnownBlockHeader)
 	if err != nil {
 		return nil, nil, err
 	}
 	if !pathPartTwoValid {
-		return nil, nil, &ProofVerificationError{"verification failed: ledger path from last known block"}
+		return nil, nil, &ProofVerificationError{msg: "verification failed: ledger path from last known block"}
 	}
-	return txProof, &LedgerPath{append(pathPartTwo.Path, pathPartOne.Path[1:]...)}, nil
+	return txProof, &LedgerPath{Path: append(pathPartTwo.Path, pathPartOne.Path[1:]...)}, nil
 }
 
 // CalculateValueHash creates unique hash for specific value, by hashing concatenation
